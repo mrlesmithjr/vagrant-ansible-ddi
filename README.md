@@ -7,10 +7,16 @@ http://phpipam.net/
 https://www.isc.org/downloads/dhcp/
 
 Once everything is installed you can pull up the following interfaces using your browser of choice.
-PowerDNS NSEdit
+
+###### PowerDNS NSEdit
 http://192.168.202.33/nsedit  (admin/admin)
+
+###### phpIPAM
+
 http://192.168.202.33/phpipam  (admin/ipamadmin)
 
+Interested in learning the API for PowerDNS?
+https://doc.powerdns.com/md/httpapi/README/
 Requirements
 ============
 
