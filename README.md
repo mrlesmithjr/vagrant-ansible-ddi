@@ -17,6 +17,17 @@ http://192.168.202.33/phpipam  (admin/ipamadmin)
 
 Interested in learning the API for PowerDNS?
 https://doc.powerdns.com/md/httpapi/README/
+
+Quick How-To
+============
+````
+git clone https://github.com/mrlesmithjr/vagrant-ansible-ddi.git
+cd vagrant-ansible-ddi
+vagrant up
+vagrant ssh
+cd /vagrant
+ansible-playbook -i hosts playbook.yml
+````
 Requirements
 ============
 
