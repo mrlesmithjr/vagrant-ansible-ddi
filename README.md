@@ -1,7 +1,15 @@
 Purpose
 =======
 
-Spin up vagrant multi node environment and manage all nodes using Ansible. Upon spinning up vagrant will provision each node using Ansible to bootstrap the nodes. During the bootstrap each node will have a respective host_vars configuration file which will be updated with their eth1 address and ssh key file location. This allows you to run Ansible plays from within your HostOS or within any of your vagrant nodes.
+Spins up a single node instance of an Open-Source DDI (DNS, DHCP and IPAM) solution. This includes PowerDNS (DNS), ISC-DHCP (DHCP) and phpIPAM (IPAM).
+https://www.powerdns.com/
+http://phpipam.net/
+https://www.isc.org/downloads/dhcp/
+
+Once everything is installed you can pull up the following interfaces using your browser of choice.
+PowerDNS NSEdit
+http://192.168.202.33/nsedit  (admin/admin)
+http://192.168.202.33/phpipam  (admin/ipamadmin)
 
 Requirements
 ============
@@ -43,16 +51,38 @@ nodes.yml
 Define the nodes to spin up
 ````
 ---
+# Keep in mind....Vagrant will always create an initial interface as a NAT interface..Any definitions below are for adding additional interfaces.
+# for network_name define a var other than remaining blank to define an internal only network. Otherwise leave blank for a host-only network.
+# for DHCP leave ip and network_name vars blank
+# for Static define ip var
+# type should generally be private_network..Other option(s) are: public_network
 - name: node-1
-  box: ubuntu/trusty64
-  mem: 512
+  box: mrlesmithjr/trusty64
+  mem: 1024
   cpus: 1
-  priv_ip: 192.168.250.101
-- name: node-2
-  box: ubuntu/trusty64
-  mem: 512
-  cpus: 1
-  priv_ip: 192.168.250.102
+  ansible_ssh_host_ip: 192.168.202.33 #always create for Ansible provisioning within nodes
+  config_interfaces: "False"  #defines if interfaces below should be created or not...Set to "False" if you do not wish to create the interfaces.
+  interfaces:  #Define additional interface settings
+    - ip: 192.168.12.11
+      auto_config: "True"
+      network_name: 01-to-02
+      method: static
+      type: private_network
+    - ip: 192.168.14.11
+      auto_config: "True"
+      network_name:
+      method: static
+      type: private_network
+    - ip: 192.168.15.11
+      auto_config: "False"
+      network_name: 01-to-05
+      method: static
+      type: private_network
+    - ip:
+      auto_config: "True"
+      network_name:
+      method: dhcp
+      type: private_network
 ````
 
 Provisions nodes by bootstrapping using Ansible
@@ -67,8 +97,16 @@ Bootstrap Playbook
   sudo: yes
   vars:
     - galaxy_roles:
-      - mrlesmithjr.bootstrap
+      - mrlesmithjr.apache2
       - mrlesmithjr.base
+      - mrlesmithjr.bootstrap
+      - mrlesmithjr.config-interfaces
+      - mrlesmithjr.isc-dhcp
+      - mrlesmithjr.logstash
+      - mrlesmithjr.mariadb-mysql
+      - mrlesmithjr.phpipam
+      - mrlesmithjr.powerdns
+      - mrlesmithjr.quagga
     - install_galaxy_roles: true
     - ssh_key_path: '.vagrant/machines/{{ inventory_hostname }}/virtualbox/private_key'
     - update_host_vars: true
@@ -92,6 +130,14 @@ Bootstrap Playbook
     - name: installing ansible
       apt: name=ansible state=latest
       when: ansible_os_family == "Debian"
+
+    - name: installing epel repo
+      yum: name=epel-release state=present
+      when: ansible_os_family == "RedHat"
+
+    - name: installing ansible
+      yum: name=ansible state=present
+      when: ansible_os_family == "RedHat"
 
 #    - name: installing ansible
 #      pip: name=ansible state=present
@@ -127,7 +173,13 @@ Bootstrap Playbook
       lineinfile: dest=./host_vars/{{ inventory_hostname }} regexp="^ansible_ssh_host{{ ':' }}" line="ansible_ssh_host{{ ':' }} {{ ansible_eth1.ipv4.address }}"
       delegate_to: localhost
       sudo: false
-      when: update_host_vars is defined and update_host_vars
+      when: update_host_vars is defined and update_host_vars and ansible_eth1 is defined
+
+    - name: updating ansible_ssh_host
+      lineinfile: dest=./host_vars/{{ inventory_hostname }} regexp="^ansible_ssh_host{{ ':' }}" line="ansible_ssh_host{{ ':' }} {{ ansible_enp0s8.ipv4.address }}"
+      delegate_to: localhost
+      sudo: false
+      when: update_host_vars is defined and update_host_vars and ansible_enp0s8 is defined
 
     - name: updating ansible_ssh_key
       lineinfile: dest=./host_vars/{{ inventory_hostname }} regexp="^ansible_ssh_private_key_file{{ ':' }}" line="ansible_ssh_private_key_file{{ ':' }} {{ ssh_key_path }}"
@@ -140,7 +192,34 @@ Bootstrap Playbook
       delegate_to: localhost
       sudo: false
       when: update_host_vars is defined and update_host_vars
-
+````
+````
+playbook.yml
+````
+Adjust the variables under vars: to suit your needs. By Default PowerDNS and phpIPAM are installed.
+````
+---
+- hosts: all
+  sudo: true
+  remote_user: vagrant
+  vars:
+    - deb_db_password: $6$3BFlAptb$S4313dXRWU12lLTXbh2/h3mBOdUWA1pQMQ7uYwWVT32Ko.R.cRdIZETFHKbgdpWRNbRe6XoKECIEFxqgFu2vp.
+    - enable_pdns_web_server: true
+    - install_dhcp: false  #defines if dhcp services should be installed
+    - install_dns: true  #defines if powerdns (dns) services should be installed
+    - install_logstash: false  #defines if logstash should be installed to monitor powerdns
+    - install_phpipam: true  #defines if phpipam services should be installed
+    - install_quagga: false  #defines if quagga (routing) should be installed for AnyCast services
+    - mysql_root_password: $6$3BFlAptb$S4313dXRWU12lLTXbh2/h3mBOdUWA1pQMQ7uYwWVT32Ko.R.cRdIZETFHKbgdpWRNbRe6XoKECIEFxqgFu2vp.
+  roles:
+    - mrlesmithjr.apache2
+    - mrlesmithjr.config-interfaces
+    - mrlesmithjr.mariadb-mysql
+    - { role: mrlesmithjr.isc-dhcp, when: install_dhcp is defined and install_dhcp }
+    - { role: mrlesmithjr.logstash, when: install_logstash is defined and install_logstash }
+    - { role: mrlesmithjr.phpipam, when: install_phpipam is defined and install_phpipam }
+    - { role: mrlesmithjr.powerdns, when: install_dns is defined and install_dns }
+    - { role: mrlesmithjr.quagga, when: (install_quagga is defined and install_quagga) and (enable_pdns_anycast is defined and enable_pdns_anycast) }
 ````
 
 Usage
@@ -149,8 +228,8 @@ Usage
 http://everythingshouldbevirtual.com/learning-vagrant-and-ansible-provisioning
 
 ````
-git clone https://github.com/mrlesmithjr/vagrant-ansible-template.git
-cd vagrant-ansible-template
+git clone https://github.com/mrlesmithjr/vagrant-ansible-ddi.git
+cd vagrant-ansible-ddi
 ````
 Update nodes.yml to reflect your desired nodes to spin up.
 
@@ -161,9 +240,9 @@ vagrant up
 
 To run ansible from within Vagrant nodes (Ex. site.yml)
 ````
-vagrant ssh node-1 # or node-2; both work
+vagrant ssh
 cd /vagrant
-ansible-playbook -i hosts site.yml
+ansible-playbook -i hosts playbook.yml
 ````
 
 To install ansible-galaxy roles within your HostOS
