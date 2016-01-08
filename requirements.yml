@@ -1,0 +1,21 @@
+---
+- src: https://github.com/mrlesmithjr/ansible-apache2.git
+- src: https://github.com/mrlesmithjr/ansible-base.git
+- src: https://github.com/mrlesmithjr/ansible-bootstrap.git
+- src: https://github.com/mrlesmithjr/ansible-config-interfaces.git
+- src: https://github.com/mrlesmithjr/ansible-isc-dhcp.git
+- src: https://github.com/mrlesmithjr/ansible-logstash.git
+- src: https://github.com/mrlesmithjr/ansible-mariadb-mysql.git
+- src: https://github.com/mrlesmithjr/ansible-phpipam.git
+- src: https://github.com/mrlesmithjr/ansible-powerdns.git
+- src: https://github.com/mrlesmithjr/ansible-quagga.git
+- src: mrlesmithjr.apache2
+- src: mrlesmithjr.base
+- src: mrlesmithjr.bootstrap
+- src: mrlesmithjr.config-interfaces
+- src: mrlesmithjr.isc-dhcp
+- src: mrlesmithjr.logstash
+- src: mrlesmithjr.mariadb-mysql
+- src: mrlesmithjr.phpipam
+- src: mrlesmithjr.powerdns
+- src: mrlesmithjr.quagga

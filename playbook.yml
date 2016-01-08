@@ -12,11 +12,11 @@
     - install_quagga: false  #defines if quagga (routing) should be installed for AnyCast services
     - mysql_root_password: $6$3BFlAptb$S4313dXRWU12lLTXbh2/h3mBOdUWA1pQMQ7uYwWVT32Ko.R.cRdIZETFHKbgdpWRNbRe6XoKECIEFxqgFu2vp.
   roles:
-    - mrlesmithjr.apache2
-    - mrlesmithjr.config-interfaces
-    - mrlesmithjr.mariadb-mysql
-    - { role: mrlesmithjr.isc-dhcp, when: install_dhcp is defined and install_dhcp }
-    - { role: mrlesmithjr.logstash, when: install_logstash is defined and install_logstash }
-    - { role: mrlesmithjr.phpipam, when: install_phpipam is defined and install_phpipam }
-    - { role: mrlesmithjr.powerdns, when: install_dns is defined and install_dns }
-    - { role: mrlesmithjr.quagga, when: (install_quagga is defined and install_quagga) and (enable_pdns_anycast is defined and enable_pdns_anycast) }
+    - { role: ansible-apache2 }
+    - { role: ansible-config-interfaces }
+    - { role: ansible-mariadb-mysql }
+    - { role: ansible-isc-dhcp, when: install_dhcp is defined and install_dhcp }
+    - { role: ansible-logstash, when: install_logstash is defined and install_logstash }
+    - { role: ansible-phpipam, when: install_phpipam is defined and install_phpipam }
+    - { role: ansible-powerdns, when: install_dns is defined and install_dns }
+    - { role: ansible-quagga, when: (install_quagga is defined and install_quagga) and (enable_pdns_anycast is defined and enable_pdns_anycast) }
