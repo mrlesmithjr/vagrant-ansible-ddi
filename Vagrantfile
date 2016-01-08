@@ -11,6 +11,7 @@ Vagrant.configure(2) do |config|
     ddi.vm.hostname = "ddi"
 
     ddi.vm.network :private_network, ip: "192.168.202.201"
+    ddi.vm.network "forwarded_port", guest: 80, host: 8080
 
     ddi.vm.provider "virtualbox" do |vb|
       vb.memory = "2048"
