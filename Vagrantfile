@@ -7,7 +7,7 @@
 # you're doing.
 Vagrant.configure(2) do |config|
   config.vm.define "ddi" do |ddi|
-    ddi.vm.box = "mrlesmithjr/trusty64"
+    ddi.vm.box = "ubuntu/trusty64"
     ddi.vm.hostname = "ddi"
 
     ddi.vm.network :private_network, ip: "192.168.202.201"

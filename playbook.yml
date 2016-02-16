@@ -1,6 +1,6 @@
 ---
 - hosts: all
-  sudo: true
+  become: true
   remote_user: vagrant
   vars:
     - deb_db_password: $6$3BFlAptb$S4313dXRWU12lLTXbh2/h3mBOdUWA1pQMQ7uYwWVT32Ko.R.cRdIZETFHKbgdpWRNbRe6XoKECIEFxqgFu2vp.

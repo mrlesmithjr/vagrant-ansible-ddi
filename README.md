@@ -9,11 +9,11 @@ https://www.isc.org/downloads/dhcp/
 Once everything is installed you can pull up the following interfaces using your browser of choice.
 
 ###### PowerDNS NSEdit
-http://192.168.202.33/nsedit  (admin/admin)
+http://192.168.202.201/nsedit  (admin/admin)
 
 ###### phpIPAM
 
-http://192.168.202.33/phpipam  (admin/ipamadmin)
+http://192.168.202.201/phpipam  (admin/ipamadmin)
 
 Interested in learning the API for PowerDNS?
 https://doc.powerdns.com/md/httpapi/README/
@@ -56,7 +56,7 @@ Define the nodes to spin up
   box: mrlesmithjr/trusty64
   mem: 1024
   cpus: 1
-  ansible_ssh_host_ip: 192.168.202.33 #always create for Ansible provisioning within nodes
+  ansible_ssh_host_ip: 192.168.202.201 #always create for Ansible provisioning within nodes
   config_interfaces: "False"  #defines if interfaces below should be created or not...Set to "False" if you do not wish to create the interfaces.
   interfaces:  #Define additional interface settings
     - ip: 192.168.12.11
