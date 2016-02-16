@@ -1,12 +1,12 @@
 Purpose
 =======
 
-Spins up a single node instance of an Open-Source DDI (DNS, DHCP and IPAM) solution. This includes PowerDNS (DNS), ISC-DHCP (DHCP) and phpIPAM (IPAM).
-https://www.powerdns.com/
-http://phpipam.net/
-https://www.isc.org/downloads/dhcp/
+Spins up a single node instance of an Open-Source DDI (DNS, DHCP and IPAM) solution. This includes PowerDNS (DNS), ISC-DHCP (DHCP) and phpIPAM (IPAM).  
+https://www.powerdns.com/  
+http://phpipam.net/  
+https://www.isc.org/downloads/dhcp/  
 
-Once everything is installed you can pull up the following interfaces using your browser of choice.
+Once everything is installed you can pull up the following interfaces using your browser of choice.  
 
 ###### PowerDNS NSEdit
 http://192.168.202.201/nsedit  (admin/admin)
