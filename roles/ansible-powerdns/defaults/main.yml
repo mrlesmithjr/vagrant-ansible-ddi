@@ -94,7 +94,7 @@ pdns_rev_zones:  #defines the DNS reverse zones to create if create_pdns_zones i
   - 1.168.192.in-addr.arpa
   - 70.168.192.in-addr.arpa
   - 200.168.192.in-addr.arpa
-pdns_server_version: 3.4.6-1
+pdns_server_version: 3.4.7-1
 pdns_webserver_address: 0.0.0.0
 pdns_webserver_allow: "0.0.0.0/0,::/0"
 pdns_webserver_password: []  #define here or globally in group_vars/all/accounts
