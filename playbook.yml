@@ -4,6 +4,7 @@
   remote_user: vagrant
   vars:
     - deb_db_password: $6$3BFlAptb$S4313dXRWU12lLTXbh2/h3mBOdUWA1pQMQ7uYwWVT32Ko.R.cRdIZETFHKbgdpWRNbRe6XoKECIEFxqgFu2vp.
+    - enable_pdns_server_logging: true
     - enable_pdns_web_server: true
     - install_dhcp: false  #defines if dhcp services should be installed
     - install_dns: true  #defines if powerdns (dns) services should be installed
@@ -11,6 +12,10 @@
     - install_phpipam: true  #defines if phpipam services should be installed
     - install_quagga: false  #defines if quagga (routing) should be installed for AnyCast services
     - mysql_root_password: $6$3BFlAptb$S4313dXRWU12lLTXbh2/h3mBOdUWA1pQMQ7uYwWVT32Ko.R.cRdIZETFHKbgdpWRNbRe6XoKECIEFxqgFu2vp.
+    - pdns_db_name: pdns
+    - pdns_db_pass: pdns
+    - pdns_db_user: pdns
+    - pri_domain_name: vagrant.local
   roles:
     - role: ansible-etc-hosts
     - role: ansible-apache2

@@ -17,5 +17,13 @@ Vagrant.configure(2) do |config|
       vb.memory = "2048"
     end
   end
-  config.vm.provision :shell, path: "provision.sh"
+  config.vm.provision :shell, path: "bootstrap.sh"
+  config.vm.provision "ansible" do |ansible|  #runs bootstrap Ansible playbook
+    ansible.limit = "all"
+    ansible.playbook = "bootstrap.yml"
+  end
+  config.vm.provision "ansible" do |ansible|  #runs bootstrap Ansible playbook
+    ansible.limit = "all"
+    ansible.playbook = "playbook.yml"
+  end
 end
