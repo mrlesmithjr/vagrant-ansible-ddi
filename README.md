@@ -9,11 +9,11 @@ https://www.isc.org/downloads/dhcp/
 Once everything is installed you can pull up the following interfaces using your browser of choice.  
 
 ###### PowerDNS NSEdit
-http://192.168.202.201/nsedit  (admin/admin)
+http://127.0.0.1:8080/nsedit  (admin/admin)
 
 ###### phpIPAM
 
-http://192.168.202.201/phpipam  (admin/ipamadmin)
+http://127.0.0.1:8080/phpipam/?page=login  (admin/ipamadmin)
 
 Interested in learning the API for PowerDNS?
 https://doc.powerdns.com/md/httpapi/README/
@@ -25,6 +25,11 @@ git clone https://github.com/mrlesmithjr/vagrant-ansible-ddi.git
 cd vagrant-ansible-ddi
 vagrant up
 ````
+When you are done using the Vagrant environment...Tear it down quickly...
+````
+./cleanup.sh
+````
+
 Requirements
 ============
 
@@ -85,6 +90,10 @@ cd vagrant-ansible-ddi
 Spin up your environment
 ````
 vagrant up
+````
+When you are done using the Vagrant environment...Tear it down quickly...
+````
+./cleanup.sh
 ````
 
 License
