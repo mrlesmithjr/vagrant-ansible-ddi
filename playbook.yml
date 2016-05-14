@@ -1,6 +1,45 @@
 ---
 - hosts: all
   become: true
+  vars:
+    - pri_domain_name: 'test.vagrant.local'
+  roles:
+  tasks:
+    - name: pre-reqs
+      dnf:
+        name: "{{ item }}"
+        state: present
+      with_items:
+        - libselinux-python
+      when: >
+            (ansible_os_family == "RedHat" and
+            ansible_distribution == "Fedora")
+
+    - name: pre-reqs
+      yum:
+        name: "{{ item }}"
+        state: present
+      with_items:
+        - libselinux-python
+      when: >
+            (ansible_os_family == "RedHat" and
+            ansible_distribution != "Fedora")
+
+    - name: updating /etc/hosts
+      lineinfile:
+        dest: /etc/hosts
+        regexp: "^{{ hostvars[item].ansible_ssh_host }} {{ item }} {{ item }}.{{ pri_domain_name }}"
+        line: "{{ hostvars[item].ansible_ssh_host }} {{ item }} {{ item }}.{{ pri_domain_name }}"
+        state: present
+      with_items: groups['all']
+
+- hosts: ddi-nodes
+  become: true
+  handlers:
+    - name: 'restart pdns'
+      service:
+        name: "pdns"
+        state: "restarted"
   remote_user: vagrant
   vars:
     - deb_db_password: $6$3BFlAptb$S4313dXRWU12lLTXbh2/h3mBOdUWA1pQMQ7uYwWVT32Ko.R.cRdIZETFHKbgdpWRNbRe6XoKECIEFxqgFu2vp.
@@ -15,6 +54,10 @@
     - pdns_db_name: pdns
     - pdns_db_pass: pdns
     - pdns_db_user: pdns
+    - phpipam_define_cron_jobs: true
+    - phpipam_pre_load_db: true
+    - phpipam_url_rewrite: true
+    - phpipam_version: 1.2.1
     - pri_domain_name: vagrant.local
   roles:
     - role: ansible-etc-hosts
@@ -33,3 +76,10 @@
       when: >
             (install_quagga is defined and install_quagga) and
             (enable_pdns_anycast is defined and enable_pdns_anycast)
+  tasks:
+    - name: Allowing PDNS to listen on all interfaces
+      lineinfile:
+        dest: "/etc/powerdns/pdns.conf"
+        regexp: "^local-address="
+        line: "local-address=0.0.0.0"
+      notify: restart pdns
