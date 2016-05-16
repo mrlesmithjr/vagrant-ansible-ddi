@@ -7,7 +7,7 @@
 # you're doing.
 
 # ---- Define number of nodes to spin up ----
-N = 3
+N = 5
 
 # ---- Define any custom memory/cpu requirement ----
 # if custom requirements are desired...ensure to set
@@ -19,6 +19,16 @@ N = 3
 nodes = [
   {
     :node => "node0",
+    :cpu => 1,
+    :mem => 1024
+  },
+  {
+    :node => "node1",
+    :cpu => 1,
+    :mem => 1024
+  },
+  {
+    :node => "node2",
     :cpu => 1,
     :mem => 1024
   }
@@ -121,7 +131,9 @@ Vagrant.configure(2) do |config|
             ansible.playbook = "playbook.yml"
             ansible.groups = {
               "ddi-nodes" => [
-                "node0"
+                "node0",
+                "node1",
+                "node2"
               ]
             }
           end

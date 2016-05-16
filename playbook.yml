@@ -46,15 +46,19 @@
     - deb_db_password: $6$3BFlAptb$S4313dXRWU12lLTXbh2/h3mBOdUWA1pQMQ7uYwWVT32Ko.R.cRdIZETFHKbgdpWRNbRe6XoKECIEFxqgFu2vp.
     - enable_pdns_server_logging: true
     - enable_pdns_web_server: true
+    - galera_cluster_bind_address: '{{ ansible_eth1.ipv4.address }}'  #'{{ ansible_enp0s8.ipv4.address }}'
+    - galera_cluster_nodes_group: 'ddi-nodes'
     - install_dhcp: false  #defines if dhcp services should be installed
     - install_dns: true  #defines if powerdns (dns) services should be installed
     - install_logstash: false  #defines if logstash should be installed to monitor powerdns
     - install_phpipam: true  #defines if phpipam services should be installed
     - install_quagga: false  #defines if quagga (routing) should be installed for AnyCast services
     - mysql_root_password: $6$3BFlAptb$S4313dXRWU12lLTXbh2/h3mBOdUWA1pQMQ7uYwWVT32Ko.R.cRdIZETFHKbgdpWRNbRe6XoKECIEFxqgFu2vp.
+    - pdns_db_cluster: true
     - pdns_db_name: pdns
     - pdns_db_pass: pdns
     - pdns_db_user: pdns
+    - phpipam_db_cluster: true
     - phpipam_define_cron_jobs: true
     - phpipam_pre_load_db: true
     - phpipam_url_rewrite: true
@@ -63,8 +67,9 @@
   roles:
     - role: ansible-etc-hosts
     - role: ansible-apache2
-    - role: ansible-config-interfaces
-    - role: ansible-mariadb-mysql
+#    - role: ansible-config-interfaces
+    - role: ansible-mariadb-galera-cluster
+#    - role: ansible-mariadb-mysql
     - role: ansible-isc-dhcp
       when: >
             install_dhcp is defined and
