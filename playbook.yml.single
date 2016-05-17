@@ -4,6 +4,7 @@
   vars:
     - pri_domain_name: 'test.vagrant.local'
   roles:
+    - role: ansible-ntp
   tasks:
     - name: pre-reqs
       dnf:
@@ -54,22 +55,26 @@
     - install_phpipam: true  #defines if phpipam services should be installed
     - install_quagga: false  #defines if quagga (routing) should be installed for AnyCast services
     - mysql_root_password: $6$3BFlAptb$S4313dXRWU12lLTXbh2/h3mBOdUWA1pQMQ7uYwWVT32Ko.R.cRdIZETFHKbgdpWRNbRe6XoKECIEFxqgFu2vp.
-    - pdns_db_cluster: true
+    - pdns_db_cluster: false
     - pdns_db_name: pdns
     - pdns_db_pass: pdns
     - pdns_db_user: pdns
-    - phpipam_db_cluster: true
+    - phpipam_db_cluster: false
     - phpipam_define_cron_jobs: true
     - phpipam_pre_load_db: true
     - phpipam_url_rewrite: true
     - phpipam_version: 1.2.1
     - pri_domain_name: vagrant.local
   roles:
-    - role: ansible-etc-hosts
     - role: ansible-apache2
-#    - role: ansible-config-interfaces
     - role: ansible-mariadb-galera-cluster
-#    - role: ansible-mariadb-mysql
+      when: >
+            pdns_db_cluster or
+            phpipam_db_cluster
+    - role: ansible-mariadb-mysql
+      when: >
+            not pdns_db_cluster and
+            not phpipam_db_cluster
     - role: ansible-isc-dhcp
       when: >
             install_dhcp is defined and

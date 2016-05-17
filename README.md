@@ -1,7 +1,7 @@
 Purpose
 =======
 
-Spins up a single node instance of an Open-Source DDI (DNS, DHCP and IPAM)  
+Spins up single/multi node instance(s) of an Open-Source DDI (DNS, DHCP and IPAM)  
 solution. This includes PowerDNS (DNS), ISC-DHCP (DHCP) and phpIPAM (IPAM).    
 https://www.powerdns.com/  
 http://phpipam.net/  
@@ -25,11 +25,44 @@ Quick How-To
 ````
 git clone https://github.com/mrlesmithjr/vagrant-ansible-ddi.git
 cd vagrant-ansible-ddi
-vagrant up
+````
+You can spin up a single DDI node with 2 nodes for testing DDI functionality  
+by...  
+````
+./ddi_single.sh
+````
+You can spin up a DDI cluster with 3 DDI nodes and 2 nodes for testing DDI  
+functionality by...
+````
+./ddi_cluster.sh
 ````
 When you are done using the Vagrant environment...Tear it down quickly...
 ````
 ./cleanup.sh
+````
+You can also define the following Vagrant boxes for testing by changing the  
+following line in the respective Vagrantfile...
+````
+box = "mrlesmithjr/trusty64"
+````
+The following will work with this lab...
+````
+mrlesmithjr/centos-7 (CentOS 7)
+mrlesmithjr/jessie64 (Debian Jessie)
+mrlesmithjr/trusty64 (Ubuntu Trusty)
+````
+If using CentOS you will need to modify the following line in the respective  
+playbook.yml...
+````
+galera_cluster_bind_address: '{{ ansible_eth1.ipv4.address }}'  #'{{ ansible_enp0s8.ipv4.address }}'
+````
+Debian/Ubuntu
+````
+galera_cluster_bind_address: '{{ ansible_eth1.ipv4.address }}'
+````
+CentOS
+````
+galera_cluster_bind_address: '{{ ansible_enp0s8.ipv4.address }}'
 ````
 
 Requirements
