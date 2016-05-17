@@ -20,6 +20,8 @@ http://127.0.0.1:8080/phpipam/?page=login  (admin/ipamadmin)
 Interested in learning the API for PowerDNS?
 https://doc.powerdns.com/md/httpapi/README/
 
+http://everythingshouldbevirtual.com/learning-vagrant-and-ansible-provisioning
+
 Quick How-To
 ============
 ````
@@ -91,6 +93,7 @@ phpIPAM are installed.
   vars:
     - pri_domain_name: 'test.vagrant.local'
   roles:
+    - role: ansible-ntp
   tasks:
     - name: pre-reqs
       dnf:
@@ -133,25 +136,34 @@ phpIPAM are installed.
     - deb_db_password: $6$3BFlAptb$S4313dXRWU12lLTXbh2/h3mBOdUWA1pQMQ7uYwWVT32Ko.R.cRdIZETFHKbgdpWRNbRe6XoKECIEFxqgFu2vp.
     - enable_pdns_server_logging: true
     - enable_pdns_web_server: true
+    - galera_cluster_bind_address: '{{ ansible_eth1.ipv4.address }}'  #'{{ ansible_enp0s8.ipv4.address }}'
+    - galera_cluster_nodes_group: 'ddi-nodes'
     - install_dhcp: false  #defines if dhcp services should be installed
     - install_dns: true  #defines if powerdns (dns) services should be installed
     - install_logstash: false  #defines if logstash should be installed to monitor powerdns
     - install_phpipam: true  #defines if phpipam services should be installed
     - install_quagga: false  #defines if quagga (routing) should be installed for AnyCast services
     - mysql_root_password: $6$3BFlAptb$S4313dXRWU12lLTXbh2/h3mBOdUWA1pQMQ7uYwWVT32Ko.R.cRdIZETFHKbgdpWRNbRe6XoKECIEFxqgFu2vp.
+    - pdns_db_cluster: false
     - pdns_db_name: pdns
     - pdns_db_pass: pdns
     - pdns_db_user: pdns
+    - phpipam_db_cluster: false
     - phpipam_define_cron_jobs: true
     - phpipam_pre_load_db: true
     - phpipam_url_rewrite: true
     - phpipam_version: 1.2.1
     - pri_domain_name: vagrant.local
   roles:
-    - role: ansible-etc-hosts
     - role: ansible-apache2
-    - role: ansible-config-interfaces
+    - role: ansible-mariadb-galera-cluster
+      when: >
+            pdns_db_cluster or
+            phpipam_db_cluster
     - role: ansible-mariadb-mysql
+      when: >
+            not pdns_db_cluster and
+            not phpipam_db_cluster
     - role: ansible-isc-dhcp
       when: >
             install_dhcp is defined and
@@ -183,35 +195,6 @@ phpIPAM are installed.
       notify: restart pdns
 ````
 
-Usage
-=====
-
-http://everythingshouldbevirtual.com/learning-vagrant-and-ansible-provisioning
-
-````
-git clone https://github.com/mrlesmithjr/vagrant-ansible-ddi.git
-cd vagrant-ansible-ddi
-````
-Spin up your environment
-````
-vagrant up
-````
-When you are done using the Vagrant environment...Tear it down quickly...
-````
-./cleanup.sh
-````
-
-The default Vagrant box is..  
-````
-box = "mrlesmithjr/trusty64"
-````
-You can change this to any of the following to test Debian/Ubuntu/CentOS by  
-editing the Vagrantfile..  
-````
-box = "mrlesmithjr/centos-7" (CentOS 7)
-box = "mrlesmithjr/jessie64" (Debian Jessie)
-box = "mrlesmithjr/trusty64" (Ubuntu Trusty)
-````
 License
 -------
 
