@@ -1,0 +1,39 @@
+---
+- hosts: ddi-nodes
+  become: true
+  vars:
+    - bootstrap_mysql: false  #Define or pass as extra-var to re-bootstrap MySQL cluster if out of sync or rebooted nodes (vagrant halt|up)
+    - mysql_master_node: 'node0'
+  roles:
+  tasks:
+    - name: killing lingering MySQL processes
+      command: "pkill mysqld"
+      ignore_errors: true
+      when: bootstrap_mysql
+
+    - name: bootstrapping MySQL
+      command: "service mysql bootstrap"
+      when: >
+            bootstrap_mysql and
+            inventory_hostname == mysql_master_node
+
+    - name: restarting MySQL services
+      service:
+        name: "mysql"
+        state: "restarted"
+      when: >
+            bootstrap_mysql and
+            inventory_hostname != mysql_master_node
+
+    - name: restarting MySQL services
+      service:
+        name: "mysql"
+        state: "restarted"
+      register: mysql_restarted
+      when: not bootstrap_mysql
+
+    - name: restarting PDNS
+      service:
+        name: "pdns"
+        state: "restarted"
+      when: mysql_restarted.changed
